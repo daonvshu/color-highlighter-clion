@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2023 Elior "Mallowigi" Boukhobza
+ * Copyright (c) 2015-2025 Elior "Mallowigi" Boukhobza
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,18 +23,18 @@
  *
  *
  */
+
 package com.mallowigi.inlay
 
 import com.intellij.codeInsight.hints.InlayHintsCollector
 import com.intellij.openapi.editor.Editor
-import com.mallowigi.visitors.AppCodeVisitor
-import com.mallowigi.visitors.JSVisitor
+import com.mallowigi.visitors.CppVisitor
 
-class AppCodeInlineInlayProvider : ColorInlineInlayProvider() {
+class CppInlineInlayProvider : ColorInlineInlayProvider() {
   @Suppress("UnstableApiUsage")
   override fun getCollector(editor: Editor): InlayHintsCollector = MyInlineInlayCollector(editor)
 
   class MyInlineInlayCollector(editor: Editor) : InlineInlayCollector(editor) {
-    override fun getVisitor() = AppCodeVisitor()
+    override fun getVisitor() = CppVisitor()
   }
 }

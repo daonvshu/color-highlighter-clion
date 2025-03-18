@@ -24,7 +24,6 @@
  *
  */
 
-import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
@@ -38,10 +37,8 @@ plugins {
   // Java support
   id("java")
   alias(libs.plugins.kotlin)
-  alias(libs.plugins.gradleIntelliJPlugin)
   alias(libs.plugins.changelog)
-  alias(libs.plugins.detekt)
-  alias(libs.plugins.ktlint)
+  alias(libs.plugins.intellij)
 }
 
 // Import variables from gradle.properties file
@@ -62,106 +59,28 @@ val javaVersion: String by project
 group = pluginGroup
 version = pluginVersion
 
-val depsDartVersion: String = properties("depsDartVersion")
-val depsGoVersion: String = properties("depsGoVersion")
-val depsPhpVersion: String = properties("depsPhpVersion")
-val depsPyVersion: String = properties("depsPyVersion")
-val depsRubyVersion: String = properties("depsRubyVersion")
-val depsScalaVersion: String = properties("depsScalaVersion")
-val depsRVersion: String = properties("depsRVersion")
-val depsRustVersion: String = properties("depsRustVersion")
-val depsLuaVersion: String = properties("depsLuaVersion")
-val depsVueVersion: String = properties("depsVueVersion")
-val depsSvelteVersion: String = properties("depsSvelteVersion")
-
 // Configure project's dependencies
 repositories {
   mavenCentral()
   mavenLocal()
   gradlePluginPortal()
+}
 
-  intellijPlatform {
-    defaultRepositories()
-    jetbrainsRuntime()
-  }
+intellij {
+  version.set("2024.3")
+  type.set("CL") // Target IDE Platform
+
+  plugins.set(listOf(
+  ))
 }
 
 dependencies {
-  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
   implementation("commons-io:commons-io:2.11.0")
   implementation("com.thoughtworks.xstream:xstream:1.4.20")
-
-  intellijPlatform {
-    intellijIdeaUltimate(platformVersion, useInstaller = false)
-    instrumentationTools()
-    pluginVerifier()
-    zipSigner()
-
-    bundledPlugins(
-      "com.intellij.java",
-      "com.intellij.java-i18n",
-      "com.intellij.database",
-      "com.intellij.css",
-      "com.intellij.properties",
-      "org.jetbrains.plugins.yaml",
-      "org.intellij.plugins.markdown",
-      "org.jetbrains.kotlin",
-    )
-
-    plugins(
-      "Dart:$depsDartVersion",
-      "PythonCore:$depsPyVersion",
-      "org.jetbrains.plugins.go:$depsGoVersion",
-      "org.intellij.scala:$depsScalaVersion",
-      "org.jetbrains.plugins.ruby:$depsRubyVersion",
-      "com.jetbrains.php:$depsPhpVersion",
-      "R4Intellij:$depsRVersion",
-      "com.jetbrains.rust:$depsRustVersion",
-      "com.tang:$depsLuaVersion",
-      "dev.blachut.svelte.lang:$depsSvelteVersion",
-      "org.jetbrains.plugins.vue:$depsVueVersion",
-    )
-  }
 }
 
 kotlin {
   jvmToolchain(17)
-}
-
-intellijPlatform {
-  pluginConfiguration {
-    id = pluginGroup
-    name = pluginName
-    version = pluginVersion
-
-    ideaVersion {
-      sinceBuild = pluginSinceBuild
-      untilBuild = pluginUntilBuild
-    }
-
-    changeNotes = provider {
-      with(changelog) {
-        renderItem(
-          (getOrNull(pluginVersion) ?: getUnreleased())
-            .withHeader(false)
-            .withEmptySections(false),
-          Changelog.OutputType.HTML,
-        )
-      }
-    }
-  }
-
-  publishing {
-    token = environment("PUBLISH_TOKEN")
-    channels = listOf(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
-  }
-
-  signing {
-    certificateChain = environment("CERTIFICATE_CHAIN")
-    privateKey = environment("PRIVATE_KEY")
-    password = environment("PRIVATE_KEY_PASSWORD")
-  }
-
 }
 
 changelog {
@@ -173,23 +92,12 @@ changelog {
   groups.set(listOf("Features", "Fixes", "Other", "Bump"))
 }
 
-detekt {
-  config.setFrom("./detekt-config.yml")
-  buildUponDefaultConfig = true
-  autoCorrect = true
-}
-
 tasks {
   javaVersion.let {
     // Set the compatibility versions to 1.8
     withType<JavaCompile> {
       sourceCompatibility = it
       targetCompatibility = it
-    }
-
-    withType<Detekt> {
-      jvmTarget = it
-      reports.xml.required.set(true)
     }
   }
 

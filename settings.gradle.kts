@@ -24,7 +24,7 @@
  *
  */
 
-rootProject.name = "color-highlighter"
+rootProject.name = "color-highlighter-clion"
 
 pluginManagement {
   repositories {

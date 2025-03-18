@@ -116,6 +116,7 @@ object ColorUtils {
 
     return Color(red, green, blue, alpha)
   }
+
   /** Parse rgb in the hex format #123456. */
   fun getRGB(hex: String): Color {
     val rgb = normalizeRGB(hex, 6)
@@ -155,20 +156,24 @@ object ColorUtils {
   fun toHSL(color: Color): String {
     val hsl = FloatArray(3)
     RGBtoHSL(color.red, color.green, color.blue, hsl)
-    return String.format("hsl(%d, %d%%, %d%%)",
+    return String.format(
+      "hsl(%d, %d%%, %d%%)",
       (hsl[0] * 100).roundToLong(),
       (hsl[1] * 100).roundToLong(),
-      (hsl[2] * 100).roundToLong())
+      (hsl[2] * 100).roundToLong()
+    )
   }
 
   fun toHSLA(color: Color): String {
     val hsl = FloatArray(3)
     RGBtoHSL(color.red, color.green, color.blue, hsl)
-    return String.format("hsl(%d, %d%%, %d%%, %d)",
+    return String.format(
+      "hsl(%d, %d%%, %d%%, %d)",
       (hsl[0] * 100).roundToLong(),
       (hsl[1] * 100).roundToLong(),
       (hsl[2] * 100).roundToLong(),
-      color.alpha / 255)
+      color.alpha / 255
+    )
   }
 
   fun toHex(color: Color?): String = ColorUtil.toHex(color!!)
@@ -302,5 +307,4 @@ object ColorUtils {
 
   /** Converts to decimal. */
   private fun toDecimal(f: Float): Int = (f * 255.0f + 0.5f).toInt()
-
 }

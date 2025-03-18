@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015-2022 Elior "Mallowigi" Boukhobza
+ * Copyright (c) 2015-2025 Elior "Mallowigi" Boukhobza
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,22 +29,36 @@ package com.mallowigi.visitors
 import com.intellij.codeInsight.daemon.impl.HighlightVisitor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.php.lang.psi.PhpFile
-import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
+import com.intellij.psi.util.PsiUtilCore
 import com.mallowigi.search.ColorSearchEngine
 import java.awt.Color
 
-class PhpVisitor : ColorVisitor() {
+class CppVisitor : ColorVisitor() {
 
-  override fun clone(): HighlightVisitor = PhpVisitor()
+  private val allowedTypes = listOf(
+    "INTEGER_LITERAL",
+    "STRING_LITERAL",
+  )
 
-  override fun suitableForFile(file: PsiFile): Boolean = file is PhpFile
+  private val extensions: Set<String> = setOf(
+    "h",
+    "hpp",
+    "c",
+    "cpp",
+    "cxx",
+  )
+
+  override fun clone(): HighlightVisitor = CppVisitor()
+
+  override fun suitableForFile(file: PsiFile): Boolean =
+    extensions.contains(file.virtualFile?.extension)
 
   override fun accept(element: PsiElement): Color? {
-    if (element !is StringLiteralExpression) return null
+    val type = PsiUtilCore.getElementType(element).toString()
+    if (type !in allowedTypes) return null
 
-    val value = element.contents
+    val value = element.text
+    if (value !is String) return null
     return ColorSearchEngine.getColor(value, this)
   }
-
 }
